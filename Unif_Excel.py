@@ -12,7 +12,7 @@ o = win32com.client.Dispatch("Excel.Application")
 o.Visible = False
 letter = string.ascii_uppercase
 my_system = platform.uname()
-format_to_open =[".xlsx", ".xlsm", ".xltx", "xltm","XLSX"]
+format_to_open =[".xlsx", ".xlsm", ".xltx", ".xltm",".XLSX"]
 format_to_transfrom = [".xls", ".xlsb", ".xltx", ".xltm",".xlt",".xml",".xlam",".xla",".xlw",".xlr"]
 
 
