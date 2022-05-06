@@ -243,4 +243,4 @@ def action_after_find_data(user_action,which_col, which_row, which_sheet):
 
 
 
-opens = Folder_And_File(r"C:\Users\Kobi Malul\Desktop\נכס בודד ר\CHANGE_Name","")
+opens = Folder_And_File(r"","")
