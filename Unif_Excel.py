@@ -32,7 +32,7 @@ class Folder_And_File:
         self.getSystem = str(my_system.system)
         self.file_path = str(file_path).strip()
 
-        if len(self.folder_path) > 0 and len(self.file_path) == 0:
+        if (len(self.folder_path) > 0 and len(self.file_path) == 0) or (file_path.find(":") > 0 and len(folder_pth) > 0):
             Folder_And_File.check_folder(self)
 
         elif len(self.folder_path) == 0 and len(self.file_path) == 0:
@@ -40,9 +40,6 @@ class Folder_And_File:
 
         elif len(self.folder_path) == 0 and len(self.file_path) > 0:
             pass
-
-        if file_path.find(":") > 0 and len(folder_pth) > 0:
-            Folder_And_File.check_folder(self)
 
     def check_folder(self):
         if self.getSystem == "Windows":
@@ -110,7 +107,7 @@ def user_action(folder_pth): # user select hes action
         ask_for_action = input("choose the action you want to do \n S(search)\n T(change Type from xls to xlsx)\n C(copy data that you search to empty workbook)\n Q(quit)\nwhat action do you want to do ?")
         ask_for_action = ask_for_action.strip()
         if ask_for_action != "q" and len(ask_for_action) > 0:
-            ask_for_action = ask_for_action.strip().lower()
+            ask_for_action = ask_for_action.lower()
             action(ask_for_action,folder_pth)
 
 def action(ask_for_action,folder_pth):
@@ -137,31 +134,30 @@ def search(folder_pth, file):
         file_in_folder_end = os.path.splitext(file_in_folder)[-1].lower()
         if file_in_folder_end in format_to_open:
             print(file_in_folder)
-            try:
-                letter_found = Action_On_File(search_for_data,folder_pth, file_in_folder)
-                letter_found.search_for_value()
-                which_sheet = letter_found.return_sheet
-                which_col = letter_found.letter_return
-                which_row = letter_found.row_found
-                open_files = openpyxl.load_workbook(folder_pth + "/" + file_in_folder)
-                what_kind_of_action = True
-                ask_user_for_action = True
-                while ask_user_for_action != "Yes" or ask_user_for_action !="No":
-                    ask_user_for_action = input("what action do you want to do on the found data yes or no ?").capitalize()
-                    print(ask_user_for_action)
-                    if ask_user_for_action == "Yes":
-                        while what_kind_of_action != "None":
-                            what_kind_of_action = input("for copy row to new workbook(cr) for delete row(dr) for get information on the row(ir) or None").capitalize()
-                            print(what_kind_of_action)
-                            if what_kind_of_action == "YES":
-                                action_after_find_data(which_col, which_row, which_sheet)
-                            elif what_kind_of_action == "None":
-                                print("your data its on ",which_col, which_row, which_sheet)
-                    elif ask_user_for_action == "No":
-                        print("your data its on ", which_col, which_row, which_sheet)
+            #try:
+            letter_found = Action_On_File(search_for_data,folder_pth, file_in_folder)
+            letter_found.search_for_value()
+            which_sheet = letter_found.return_sheet
+            which_col = letter_found.letter_return
+            which_row = letter_found.row_found
+            open_files = openpyxl.load_workbook(folder_pth + "/" + file_in_folder)
+            what_kind_of_action = True
+            ask_user_for_action = True
+            print("your data its on ", which_col, which_row, which_sheet)
+            while ask_user_for_action != "Yes" or ask_user_for_action !="No":
+                ask_user_for_action = input("do you want to do some action on found data yes or no ?").capitalize()
+                if ask_user_for_action == "Yes":
+                    while what_kind_of_action != "None":
+                        what_kind_of_action = input("for copy row to new workbook(cr) for delete row(dr) for get information on the row(ir) for going back write(B)").capitalize()
+                        if what_kind_of_action == "Yes":
+                            action_after_find_data(what_kind_of_action,which_col, which_row, which_sheet)
+                        elif what_kind_of_action == "B":
+                            break
+                elif ask_user_for_action == "No":
+                    break
 
-            except:
-                print("the value is not found in file ", file_in_folder)
+            #except:
+                #print("the value is not found in file ", file_in_folder)
 
         elif file_in_folder in format_to_transfrom:
             file_not_in_format +=1
@@ -235,12 +231,25 @@ def open_excel(file_to_open):
             print(MaxRow)
 
 
-def action_after_find_data(user_action,which_col, which_row, which_sheet):
-    action_to_do={
-
+def action_after_find_data(what_kind_of_action,which_col, which_row, which_sheet):
+    action_to_do= {
+            "cr": copy_to_new_excel,
+            "dr": delete_the_row,
+            "ir": get_information_on_row,
+            "anrb": add_row_before,
+            "anra": add_new_row_after,
+            "dc": delete_col,
+            "cl": copy_the_col,
+            "cr": copy_the_row,
     }
 
+    get_func_action = action_to_do.get(what_kind_of_action, "choose another action")
+    if action_to_do.get(what_kind_of_action) != None:
+        result = get_func_action(which_col, which_row, which_sheet, file=None)
+    elif action_to_do.get(what_kind_of_action)== None:
+        print("you write {}".format(what_kind_of_action), "but the option are can be only cr, dr, ir, anrb, anra, dc, cl, cr  ", get_func_action)
 
-
+def copy_to_new_excel(which_col, which_row, which_sheet):
+    pass
 
 opens = Folder_And_File(r"","")
